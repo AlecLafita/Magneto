@@ -1,23 +1,18 @@
 #include "MyCharacter.h"
-//#include "Components/StaticMeshComponent.h"
-//#include "GameFramework/SpringArmComponent.h"
-//#include "Camera/CameraComponent.h"
+#include "Camera/CameraComponent.h"
 #include "Components/InputComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/PlayerController.h"
 
-// Sets default values
 AMyCharacter::AMyCharacter()
 {
-	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	/*mMesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
-	mSpringArm = CreateDefaultSubobject<USpringArmComponent>("SpringArm");
-	mCamera = CreateDefaultSubobject<UCameraComponent>("Camera");
+	mCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+	mCamera->SetupAttachment(GetCapsuleComponent());
 
-	mMesh->SetupAttachment(RootComponent);
-	mSpringArm->SetupAttachment(mMesh);
-	mCamera->SetupAttachment(mSpringArm);*/
+	mCamera->SetRelativeLocation(FVector(0.0f, 0.0f, 50.0f + BaseEyeHeight));
+	mCamera->bUsePawnControlRotation = true;
 }
 
 // Called when the game starts or when spawned
@@ -39,6 +34,10 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	PlayerInputComponent->BindAxis("MoveForward", this, &AMyCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AMyCharacter::MoveRight);
+	PlayerInputComponent->BindAxis("Turn", this, &AMyCharacter::AddControllerYawInput);
+	PlayerInputComponent->BindAxis("LookUp", this, &AMyCharacter::AddControllerPitchInput);
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AMyCharacter::StartJumping);
+	PlayerInputComponent->BindAction("Jump", IE_Released, this, &AMyCharacter::StopJumping);
 }
 
 void AMyCharacter::MoveForward(float aValue)
@@ -51,4 +50,14 @@ void AMyCharacter::MoveRight(float aValue)
 {
 	FVector Direction = FRotationMatrix(Controller->GetControlRotation()).GetScaledAxis(EAxis::Y);
 	AddMovementInput(Direction, aValue);
+}
+
+void AMyCharacter::StartJumping()
+{
+	bPressedJump = true;
+}
+
+void AMyCharacter::StopJumping()
+{
+	bPressedJump = false;
 }
