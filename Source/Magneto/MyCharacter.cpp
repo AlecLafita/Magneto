@@ -4,6 +4,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/PlayerController.h"
+#include "Magnet/Magnet.h"
 
 AMyCharacter::AMyCharacter()
 {
@@ -26,7 +27,6 @@ AMyCharacter::AMyCharacter()
 void AMyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 // Called every frame
@@ -45,6 +45,7 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAxis("LookUp", this, &AMyCharacter::AddControllerPitchInput);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AMyCharacter::StartJumping);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &AMyCharacter::StopJumping);
+	PlayerInputComponent->BindAction("UseMagnet", IE_Pressed, this, &AMyCharacter::CreateMagnet);
 }
 
 void AMyCharacter::MoveForward(float aValue)
@@ -67,4 +68,21 @@ void AMyCharacter::StartJumping()
 void AMyCharacter::StopJumping()
 {
 	bPressedJump = false;
+}
+
+void AMyCharacter::CreateMagnet()
+{
+	UWorld* World = GetWorld();
+	if (World != nullptr)
+	{
+		FVector CameraLocation;
+		FRotator CameraRotation;
+		GetActorEyesViewPoint(CameraLocation, CameraRotation);
+		FVector MagnetLocation = CameraLocation + FTransform(CameraRotation).TransformVector(mMagnetOffset);
+
+		FRotator MagnetRotation = CameraRotation;
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = this;
+		World->SpawnActor<AMagnet>(mMagnetClass, MagnetLocation, MagnetRotation, SpawnParams);
+	}
 }
