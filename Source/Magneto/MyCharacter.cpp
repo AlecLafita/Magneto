@@ -2,6 +2,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/InputComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/PlayerController.h"
 
 AMyCharacter::AMyCharacter()
@@ -10,9 +11,15 @@ AMyCharacter::AMyCharacter()
 
 	mCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	mCamera->SetupAttachment(GetCapsuleComponent());
-
 	mCamera->SetRelativeLocation(FVector(0.0f, 0.0f, 50.0f + BaseEyeHeight));
 	mCamera->bUsePawnControlRotation = true;
+
+	mFPMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FPMesh"));
+	mFPMesh->SetOnlyOwnerSee(true);
+	mFPMesh->SetupAttachment(mCamera);
+	mFPMesh->bCastDynamicShadow = false;
+	mFPMesh->CastShadow = false;
+	GetMesh()->SetOwnerNoSee(true);
 }
 
 // Called when the game starts or when spawned
