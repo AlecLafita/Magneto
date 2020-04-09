@@ -14,7 +14,7 @@ class MAGNETO_API AMagnet : public APawn
 public:
 	// Sets default values for this pawn's properties
 	AMagnet();
-
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

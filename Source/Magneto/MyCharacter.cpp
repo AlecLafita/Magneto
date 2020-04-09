@@ -45,7 +45,24 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAxis("LookUp", this, &AMyCharacter::AddControllerPitchInput);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AMyCharacter::StartJumping);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &AMyCharacter::StopJumping);
-	PlayerInputComponent->BindAction("UseMagnet", IE_Pressed, this, &AMyCharacter::CreateMagnet);
+	PlayerInputComponent->BindAction("UseMagnet", IE_Pressed, this, &AMyCharacter::InvokeMagnet);
+}
+
+void AMyCharacter::PostInitProperties()
+{
+	Super::PostInitProperties();
+
+	UWorld* World = GetWorld();
+	if (World != nullptr)
+	{
+		FVector CameraLocation;
+		FRotator CameraRotation;
+		GetActorEyesViewPoint(CameraLocation, CameraRotation);
+		FVector MagnetLocation = CameraLocation + FTransform(CameraRotation).TransformVector(mMagnetOffset);
+		mMagnet = World->SpawnActor<AMagnet>(mMagnetClass, MagnetLocation, CameraRotation);
+		mMagnet->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
+		mMagnet->SetActorHiddenInGame(true);
+	}
 }
 
 void AMyCharacter::MoveForward(float aValue)
@@ -70,19 +87,7 @@ void AMyCharacter::StopJumping()
 	bPressedJump = false;
 }
 
-void AMyCharacter::CreateMagnet()
+void AMyCharacter::InvokeMagnet()
 {
-	UWorld* World = GetWorld();
-	if (World != nullptr)
-	{
-		FVector CameraLocation;
-		FRotator CameraRotation;
-		GetActorEyesViewPoint(CameraLocation, CameraRotation);
-		FVector MagnetLocation = CameraLocation + FTransform(CameraRotation).TransformVector(mMagnetOffset);
-
-		FRotator MagnetRotation = CameraRotation;
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.Owner = this;
-		World->SpawnActor<AMagnet>(mMagnetClass, MagnetLocation, MagnetRotation, SpawnParams);
-	}
+	mMagnet->SetActorHiddenInGame(!mMagnet->bHidden);
 }

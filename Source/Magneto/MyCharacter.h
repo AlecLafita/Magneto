@@ -30,6 +30,8 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	virtual void PostInitProperties() override;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UCameraComponent* mCamera;
 
@@ -48,5 +50,9 @@ public:
 	void StartJumping();
 	void StopJumping();
 
-	void CreateMagnet();
+	void InvokeMagnet();
+
+private:
+	UPROPERTY()
+	AMagnet*			mMagnet;
 };
