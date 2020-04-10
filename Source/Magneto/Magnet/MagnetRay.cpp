@@ -19,7 +19,7 @@ AMagnetRay::AMagnetRay()
 
 	mProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
 	mProjectileMovementComponent->SetUpdatedComponent(mCollisionComponent);
-	mProjectileMovementComponent->InitialSpeed = 100.0f;
+	mProjectileMovementComponent->InitialSpeed = 400.0f;
 	mProjectileMovementComponent->MaxSpeed = 3000.0f;
 	mProjectileMovementComponent->bRotationFollowsVelocity = true;
 	mProjectileMovementComponent->bShouldBounce = true;
@@ -47,7 +47,7 @@ void AMagnetRay::FireInDirection(const FVector& ShootDirection)
 	mProjectileMovementComponent->Velocity = ShootDirection * mProjectileMovementComponent->InitialSpeed;
 }
 
-void AMagnetRay::Stop()
+void AMagnetRay::StopFire()
 {
 	mProjectileMovementComponent->bSimulationEnabled = false;
 }

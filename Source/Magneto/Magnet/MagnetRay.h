@@ -25,7 +25,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void FireInDirection(const FVector& ShootDirection);
-	void Stop();
+	void StopFire();
 
 	UPROPERTY(VisibleDefaultsOnly, Category = Ray)
 	USphereComponent* mCollisionComponent;

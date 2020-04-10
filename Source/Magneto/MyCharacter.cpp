@@ -47,8 +47,7 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &AMyCharacter::StopJumping);
 	PlayerInputComponent->BindAction("UseMagnet", IE_Pressed, this, &AMyCharacter::InvokeMagnet);
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AMyCharacter::Fire);
-	PlayerInputComponent->BindAction("StopFire", IE_Released, this, &AMyCharacter::StopFire);
-
+	PlayerInputComponent->BindAction("Fire", IE_Released, this, &AMyCharacter::StopFire);
 }
 
 void AMyCharacter::PostInitProperties()
@@ -101,7 +100,6 @@ void AMyCharacter::Fire()
 {
 	if (!mMagnet->bHidden)
 	{
-		mMagnet->SetActorHiddenInGame(true);
 		FVector CameraLocation;
 		FRotator CameraRotation;
 		GetActorEyesViewPoint(CameraLocation, CameraRotation);

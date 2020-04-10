@@ -59,7 +59,7 @@ void AMagnet::Fire(const FVector& aDestinationPoint)
 void AMagnet::StopFire()
 {
 	mRay->SetActorHiddenInGame(true);
-	mRay->Stop();
+	mRay->StopFire();
 }
 
 void AMagnet::RestartRay()
