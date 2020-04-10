@@ -51,6 +51,10 @@ public:
 	void StopJumping();
 
 	void InvokeMagnet();
+	UFUNCTION()
+	void Fire();
+	UFUNCTION()
+	void StopFire();
 
 private:
 	UPROPERTY()

@@ -46,6 +46,9 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AMyCharacter::StartJumping);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &AMyCharacter::StopJumping);
 	PlayerInputComponent->BindAction("UseMagnet", IE_Pressed, this, &AMyCharacter::InvokeMagnet);
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AMyCharacter::Fire);
+	PlayerInputComponent->BindAction("StopFire", IE_Released, this, &AMyCharacter::StopFire);
+
 }
 
 void AMyCharacter::PostInitProperties()
@@ -53,13 +56,15 @@ void AMyCharacter::PostInitProperties()
 	Super::PostInitProperties();
 
 	UWorld* World = GetWorld();
-	if (World != nullptr)
+	if (mMagnetClass != nullptr && World != nullptr)
 	{
 		FVector CameraLocation;
 		FRotator CameraRotation;
 		GetActorEyesViewPoint(CameraLocation, CameraRotation);
 		FVector MagnetLocation = CameraLocation + FTransform(CameraRotation).TransformVector(mMagnetOffset);
-		mMagnet = World->SpawnActor<AMagnet>(mMagnetClass, MagnetLocation, CameraRotation);
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = this;
+		mMagnet = World->SpawnActor<AMagnet>(mMagnetClass, MagnetLocation, CameraRotation, SpawnParams);
 		mMagnet->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
 		mMagnet->SetActorHiddenInGame(true);
 	}
@@ -90,4 +95,27 @@ void AMyCharacter::StopJumping()
 void AMyCharacter::InvokeMagnet()
 {
 	mMagnet->SetActorHiddenInGame(!mMagnet->bHidden);
+}
+
+void AMyCharacter::Fire()
+{
+	if (!mMagnet->bHidden)
+	{
+		mMagnet->SetActorHiddenInGame(true);
+		FVector CameraLocation;
+		FRotator CameraRotation;
+		GetActorEyesViewPoint(CameraLocation, CameraRotation);
+		//TODO calculate this with the targeted object
+		FVector DestinationPoint = CameraLocation + FTransform(CameraRotation).TransformVector(FVector(400.0f,0.0f,0.0f));
+
+		mMagnet->Fire(DestinationPoint);
+	}
+}
+
+void AMyCharacter::StopFire()
+{
+	if (!mMagnet->bHidden)
+	{
+		mMagnet->StopFire();
+	}
 }

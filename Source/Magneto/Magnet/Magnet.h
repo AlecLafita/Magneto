@@ -26,12 +26,23 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	virtual void PostInitProperties() override;
+
 	UFUNCTION()
-	void Fire();
+	void Fire(const FVector& aDestinationPoint);
+	
+	UFUNCTION()
+	void StopFire();
 
 	UPROPERTY(EditDefaultsOnly, Category = Magnet)
-	TSubclassOf<class AMagnetRay> mRay;
+	TSubclassOf<class AMagnetRay> mRayClass;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = Magnet)
-	UStaticMeshComponent* mMesh;
+	UStaticMeshComponent* mMeshComponent;
+
+private:
+	UPROPERTY()
+	AMagnetRay*		mRay;
+
+	void RestartRay();
 };

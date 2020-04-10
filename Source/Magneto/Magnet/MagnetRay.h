@@ -24,12 +24,15 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-
 	void FireInDirection(const FVector& ShootDirection);
+	void Stop();
 
-	UPROPERTY(VisibleDefaultsOnly, Category = Magnet)
+	UPROPERTY(VisibleDefaultsOnly, Category = Ray)
 	USphereComponent* mCollisionComponent;
 
 	UPROPERTY(VisibleAnywhere, Category = Movement)
 	UProjectileMovementComponent* mProjectileMovementComponent;
+
+	UPROPERTY(VisibleDefaultsOnly, Category = Ray)
+	UStaticMeshComponent* mMeshComponent;
 };
