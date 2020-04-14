@@ -3,19 +3,19 @@
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
-// Sets default values
 AMagnetRay::AMagnetRay()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	mMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
-	mMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	RootComponent = mMeshComponent;
 
 	mCollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
 	mCollisionComponent->InitSphereRadius(15.0f);
-	mCollisionComponent->SetupAttachment(mMeshComponent);
+	mCollisionComponent->BodyInstance.SetCollisionProfileName(TEXT("MagnetProjectile"));
+	mCollisionComponent->OnComponentHit.AddDynamic(this, &AMagnetRay::OnHit);
+	RootComponent = mCollisionComponent;
+
+	mMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
+	mMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	mMeshComponent->AttachToComponent(mCollisionComponent, FAttachmentTransformRules::KeepRelativeTransform);
 
 	mProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
 	mProjectileMovementComponent->SetUpdatedComponent(mCollisionComponent);
@@ -28,17 +28,14 @@ AMagnetRay::AMagnetRay()
 	mProjectileMovementComponent->bSimulationEnabled = false;
 }
 
-// Called when the game starts or when spawned
 void AMagnetRay::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
-// Called every frame
 void AMagnetRay::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void AMagnetRay::FireInDirection(const FVector& ShootDirection)
@@ -50,4 +47,14 @@ void AMagnetRay::FireInDirection(const FVector& ShootDirection)
 void AMagnetRay::StopFire()
 {
 	mProjectileMovementComponent->bSimulationEnabled = false;
+}
+
+void AMagnetRay::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
+{
+	UE_LOG(LogTemp, Warning, TEXT("ON HIT"));
+	StopFire();
+	if (OtherActor != this && OtherComponent->IsSimulatingPhysics())
+	{
+		OtherComponent->AddImpulseAtLocation(mProjectileMovementComponent->Velocity * 100.0f, Hit.ImpactPoint);
+	}
 }

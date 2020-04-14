@@ -27,6 +27,9 @@ public:
 	void FireInDirection(const FVector& ShootDirection);
 	void StopFire();
 
+	UFUNCTION()
+	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
+
 	UPROPERTY(VisibleDefaultsOnly, Category = Ray)
 	USphereComponent* mCollisionComponent;
 

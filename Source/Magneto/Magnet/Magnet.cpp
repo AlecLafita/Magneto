@@ -67,5 +67,5 @@ void AMagnet::RestartRay()
 	FVector Origin;
 	FVector BoxExtent;
 	GetActorBounds(true, Origin, BoxExtent);
-	mRay->SetActorRelativeLocation(BoxExtent);
+	mRay->SetActorRelativeLocation(FVector(BoxExtent.X, 0.0f, 0.0f));
 }
