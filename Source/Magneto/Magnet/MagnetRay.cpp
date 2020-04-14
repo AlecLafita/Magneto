@@ -51,10 +51,6 @@ void AMagnetRay::StopFire()
 
 void AMagnetRay::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
 {
-	UE_LOG(LogTemp, Warning, TEXT("ON HIT"));
+	//TODO can start moving the hit object
 	StopFire();
-	if (OtherActor != this && OtherComponent->IsSimulatingPhysics())
-	{
-		OtherComponent->AddImpulseAtLocation(mProjectileMovementComponent->Velocity * 100.0f, Hit.ImpactPoint);
-	}
 }

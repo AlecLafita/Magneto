@@ -43,6 +43,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	FVector mMagnetOffset;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	float mMagnetRange = 100.0f;
 
 	void MoveForward(float aValue);
 	void MoveRight(float aValue);

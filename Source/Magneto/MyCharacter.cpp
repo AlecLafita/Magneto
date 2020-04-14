@@ -5,6 +5,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "Magnet/Magnet.h"
+#include "DrawDebugHelpers.h"
 
 AMyCharacter::AMyCharacter()
 {
@@ -100,13 +101,22 @@ void AMyCharacter::Fire()
 {
 	if (!mMagnet->bHidden)
 	{
-		FVector CameraLocation;
-		FRotator CameraRotation;
-		GetActorEyesViewPoint(CameraLocation, CameraRotation);
-		//TODO calculate this with the targeted object
-		FVector DestinationPoint = CameraLocation + FTransform(CameraRotation).TransformVector(FVector(400.0f,0.0f,0.0f));
+		//TODO delegate this calculus to some manager
+		FHitResult HitResult;
+		FVector Start = mCamera->GetComponentLocation();
+		FVector Direction = mCamera->GetForwardVector();
+		FVector End = Start + Direction * mMagnetRange;
 
-		mMagnet->Fire(DestinationPoint);
+		const bool IsHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility);
+		if (IsHit && HitResult.bBlockingHit)
+		{
+			DrawDebugLine(GetWorld(), Start, End, FColor::Blue, false, 4.f, 0, 1.f);
+			mMagnet->Fire(HitResult.ImpactPoint);
+		}
+		else
+		{
+			DrawDebugLine(GetWorld(), Start, End, FColor::Green, false, 4.f, 0, 1.5f);
+		}
 	}
 }
 
