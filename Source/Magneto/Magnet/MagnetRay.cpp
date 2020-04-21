@@ -53,4 +53,6 @@ void AMagnetRay::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UP
 {
 	//TODO can start moving the hit object
 	StopFire();
+
+	EventObjectGrabbed.Broadcast(OtherActor);
 }

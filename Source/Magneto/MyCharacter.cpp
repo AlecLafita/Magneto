@@ -49,6 +49,9 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction("UseMagnet", IE_Pressed, this, &AMyCharacter::InvokeMagnet);
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AMyCharacter::Fire);
 	PlayerInputComponent->BindAction("Fire", IE_Released, this, &AMyCharacter::StopFire);
+
+	PlayerInputComponent->BindAxis("MoveItemZAxis", this, &AMyCharacter::MoveItemZAxis);
+	PlayerInputComponent->BindAxis("MoveItemYAxis", this, &AMyCharacter::MoveItemYAxis);
 }
 
 void AMyCharacter::PostInitProperties()
@@ -125,5 +128,21 @@ void AMyCharacter::StopFire()
 	if (!mMagnet->bHidden)
 	{
 		mMagnet->StopFire();
+	}
+}
+
+void AMyCharacter::MoveItemZAxis(float aValue)
+{
+	if (!mMagnet->bHidden)
+	{
+		mMagnet->MoveItemZAxis(aValue);
+	}
+}
+
+void AMyCharacter::MoveItemYAxis(float aValue)
+{
+	if (!mMagnet->bHidden)
+	{
+		mMagnet->MoveItemYAxis(aValue);
 	}
 }

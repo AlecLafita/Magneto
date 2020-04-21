@@ -59,6 +59,10 @@ public:
 	UFUNCTION()
 	void StopFire();
 
+	UFUNCTION()
+	void MoveItemZAxis(float aValue);
+	UFUNCTION()
+	void MoveItemYAxis(float aValue);
 private:
 	UPROPERTY()
 	AMagnet*			mMagnet;

@@ -5,7 +5,9 @@
 #include "GameFramework/PlayerController.h"
 #include "Kismet/KismetMathLibrary.h"
 
-AMagnet::AMagnet()
+AMagnet::AMagnet() :
+	mRay(nullptr),
+	mGrabbedObject(nullptr)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -39,6 +41,7 @@ void AMagnet::PostInitProperties()
 		mRay = World->SpawnActor<AMagnetRay>(mRayClass, SpawnParams);
 		mRay->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
 		mRay->SetActorHiddenInGame(true);
+		mRay->EventObjectGrabbed.AddUObject(this, &AMagnet::OnObjectGrabbed);
 	}
 }
 
@@ -53,8 +56,31 @@ void AMagnet::Fire(const FVector& aDestinationPoint)
 
 void AMagnet::StopFire()
 {
+	mGrabbedObject = nullptr;
 	mRay->SetActorHiddenInGame(true);
 	mRay->StopFire();
+}
+
+void AMagnet::MoveItemZAxis(float aValue)
+{
+	if (mGrabbedObject != nullptr)
+	{
+
+	}
+}
+
+void AMagnet::MoveItemYAxis(float aValue)
+{
+	if (mGrabbedObject != nullptr)
+	{
+
+	}
+}
+
+void AMagnet::OnObjectGrabbed(AActor* aGrabbedObject)
+{
+	UE_LOG(LogTemp, Warning, TEXT("OBJECT GRAABED"));
+	mGrabbedObject = aGrabbedObject;
 }
 
 void AMagnet::RestartRay()

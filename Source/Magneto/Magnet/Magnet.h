@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "MagnetRay.h"
 #include "Magnet.generated.h"
 
 class AMagnetRay;
@@ -12,18 +13,14 @@ class MAGNETO_API AMagnet : public APawn
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this pawn's properties
 	AMagnet();
 	
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	virtual void PostInitProperties() override;
@@ -40,9 +37,20 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, Category = Magnet)
 	UStaticMeshComponent* mMeshComponent;
 
+	UFUNCTION()
+	void MoveItemZAxis(float aValue);
+	UFUNCTION()
+	void MoveItemYAxis(float aValue);
+
+	UFUNCTION()
+	void OnObjectGrabbed(AActor* aGrabbedObject);
+
 private:
 	UPROPERTY()
 	AMagnetRay*		mRay;
+
+	UPROPERTY()
+	AActor*			mGrabbedObject;
 
 	void RestartRay();
 };
