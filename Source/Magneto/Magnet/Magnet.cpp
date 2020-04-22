@@ -4,6 +4,7 @@
 #include "Components/InputComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "TransformationUtils.h"
 
 AMagnet::AMagnet() :
 	mRay(nullptr),
@@ -65,15 +66,24 @@ void AMagnet::MoveItemZAxis(float aValue)
 {
 	if (mGrabbedObject != nullptr)
 	{
+		FTransform MagnetToGrabbedObject;
+		transformationUtils::GetSpaceTransform(MagnetToGrabbedObject, *this, *mGrabbedObject);
 
+		FVector NewObjectLocation = MagnetToGrabbedObject.TransformVector(FVector(0, 0, aValue * 5));
+		mGrabbedObject->SetActorLocation(mGrabbedObject->GetActorLocation() + NewObjectLocation, true);
 	}
 }
 
 void AMagnet::MoveItemYAxis(float aValue)
 {
-	if (mGrabbedObject != nullptr)
+	if (aValue != 0 && mGrabbedObject != nullptr)
 	{
+		//TODO this should be made on camera space instead of the magnet space
+		FTransform MagnetToGrabbedObject;
+		transformationUtils::GetSpaceTransform(MagnetToGrabbedObject, *this, *mGrabbedObject);
 
+		FVector NewObjectLocation = MagnetToGrabbedObject.TransformVector(FVector(0, aValue*5, 0));
+		mGrabbedObject->SetActorLocation(mGrabbedObject->GetActorLocation () + NewObjectLocation, true);
 	}
 }
 

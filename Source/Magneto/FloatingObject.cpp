@@ -26,6 +26,7 @@ void AFloatingObject::Tick(float DeltaTime)
 
 	FRotator Rotation = GetActorRotation();
 	Rotation.Yaw += DeltaTime * RotationSpeed;
-	SetActorRotation(Rotation);
+	//SetActorRotation(Rotation);
+	//TODO Check transformation order when applying magnet movement!
 }
 
