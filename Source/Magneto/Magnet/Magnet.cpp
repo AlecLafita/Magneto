@@ -4,7 +4,7 @@
 #include "Components/InputComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "TransformationUtils.h"
+#include "DrawDebugHelpers.h"
 
 AMagnet::AMagnet() :
 	mRay(nullptr),
@@ -64,27 +64,12 @@ void AMagnet::StopFire()
 
 void AMagnet::MoveItemZAxis(float aValue)
 {
-	if (mGrabbedObject != nullptr)
-	{
-		FTransform MagnetToGrabbedObject;
-		transformationUtils::GetSpaceTransform(MagnetToGrabbedObject, *this, *mGrabbedObject);
-
-		FVector NewObjectLocation = MagnetToGrabbedObject.TransformVector(FVector(0, 0, aValue * 5));
-		mGrabbedObject->SetActorLocation(mGrabbedObject->GetActorLocation() + NewObjectLocation, true);
-	}
+	AddForceOnGrabbedObject(FVector(0.f, 0.f, aValue));
 }
 
 void AMagnet::MoveItemYAxis(float aValue)
 {
-	if (aValue != 0 && mGrabbedObject != nullptr)
-	{
-		//TODO this should be made on camera space instead of the magnet space
-		FTransform MagnetToGrabbedObject;
-		transformationUtils::GetSpaceTransform(MagnetToGrabbedObject, *this, *mGrabbedObject);
-
-		FVector NewObjectLocation = MagnetToGrabbedObject.TransformVector(FVector(0, aValue*5, 0));
-		mGrabbedObject->SetActorLocation(mGrabbedObject->GetActorLocation () + NewObjectLocation, true);
-	}
+	AddForceOnGrabbedObject(FVector(0.f, aValue, 0.f));
 }
 
 void AMagnet::OnObjectGrabbed(AActor* aGrabbedObject)
@@ -100,4 +85,25 @@ void AMagnet::RestartRay()
 	GetActorBounds(true, Origin, BoxExtent);
 	//TODO add projectile size. Also this does not get the magnet size at all
 	mRay->SetActorRelativeLocation(FVector(BoxExtent.X, 0.0f, 0.0f));
+}
+
+
+void AMagnet::AddForceOnGrabbedObject(FVector aForceDirection)
+{
+	if (mGrabbedObject != nullptr && aForceDirection != FVector::ZeroVector)
+	{
+		//TODO this should be made on camera space instead of the magnet space
+		FVector ForceVector = GetTransform().TransformVector(aForceDirection);
+		ForceVector.Normalize();
+		if (mGrabbedObject->IsRootComponentMovable())
+		{
+			UStaticMeshComponent* GrabbedObjectMesh = Cast<UStaticMeshComponent>(mGrabbedObject->GetRootComponent());
+			GrabbedObjectMesh->AddForce(ForceVector* mMagneticForce);
+
+			FVector Origin;
+			FVector BoxExtent;
+			mGrabbedObject->GetActorBounds(true, Origin, BoxExtent);
+			DrawDebugDirectionalArrow(GetWorld(), Origin - ForceVector*400, Origin, 60.0f, FColor::Yellow, false, 1.f, 0, 5.0f);
+		}
+	}
 }

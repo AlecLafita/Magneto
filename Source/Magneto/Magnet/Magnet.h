@@ -37,6 +37,9 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, Category = Magnet)
 	UStaticMeshComponent* mMeshComponent;
 
+	UPROPERTY(EditAnywhere, category = Magnet)
+	float mMagneticForce = 100000.f;
+
 	UFUNCTION()
 	void MoveItemZAxis(float aValue);
 	UFUNCTION()
@@ -53,4 +56,10 @@ private:
 	AActor*			mGrabbedObject;
 
 	void RestartRay();
+
+	/**
+	 * Adds force to the grabbed object.
+	 * @params aForce Direction of the force to apply on camera space.
+	 */
+	void AddForceOnGrabbedObject(FVector aForceDirection);
 };
