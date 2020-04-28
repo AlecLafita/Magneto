@@ -4,6 +4,8 @@
 #include "Components/InputComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Magnet/MagnetedActorMovementComponent.h"
+
 #include "DrawDebugHelpers.h"
 
 AMagnet::AMagnet() :
@@ -57,7 +59,25 @@ void AMagnet::Fire(const FVector& aDestinationPoint)
 
 void AMagnet::StopFire()
 {
-	mGrabbedObject = nullptr;
+	if (mGrabbedObject != nullptr)
+	{
+		auto GrabbedObjectMovementComponent = mGrabbedObject->FindComponentByClass<UMagnetedActorMovementComponent>();
+		if (GrabbedObjectMovementComponent != nullptr)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("REMOVING MOEVEMTN COMPONENT"));
+			GrabbedObjectMovementComponent->UnregisterComponent();
+			mGrabbedObject->RemoveInstanceComponent(GrabbedObjectMovementComponent);
+		}
+		//TArray<UMagnetedActorMovementComponent*> GrabbedObjectMovementComponents;
+		//mGrabbedObject->GetComponents(GrabbedObjectMovementComponents);
+	// 	for (const auto GrabbedObjectMovementComponents : GrabbedObjectMovementComponents)
+	// 	{
+	// 		mGrabbedObject->RemoveInstanceComponent(GrabbedObjectMovementComponents);
+	// 	}
+		mGrabbedObject = nullptr;
+	}
+
+	//TODO this should also be done when colliding
 	mRay->SetActorHiddenInGame(true);
 	mRay->StopFire();
 }
@@ -76,6 +96,12 @@ void AMagnet::OnObjectGrabbed(AActor* aGrabbedObject)
 {
 	UE_LOG(LogTemp, Warning, TEXT("OBJECT GRAABED"));
 	mGrabbedObject = aGrabbedObject;
+	auto MagnetedMovementComponent = NewObject<UMagnetedActorMovementComponent>(mGrabbedObject, TEXT("MagnetedMovement"));
+	if (MagnetedMovementComponent != nullptr)
+	{
+		mGrabbedObject->AddInstanceComponent(MagnetedMovementComponent);
+		MagnetedMovementComponent->RegisterComponent();
+	}
 }
 
 void AMagnet::RestartRay()
@@ -87,7 +113,6 @@ void AMagnet::RestartRay()
 	mRay->SetActorRelativeLocation(FVector(BoxExtent.X, 0.0f, 0.0f));
 }
 
-
 void AMagnet::AddForceOnGrabbedObject(FVector aForceDirection)
 {
 	if (mGrabbedObject != nullptr && aForceDirection != FVector::ZeroVector)
@@ -98,7 +123,7 @@ void AMagnet::AddForceOnGrabbedObject(FVector aForceDirection)
 		if (mGrabbedObject->IsRootComponentMovable())
 		{
 			UStaticMeshComponent* GrabbedObjectMesh = Cast<UStaticMeshComponent>(mGrabbedObject->GetRootComponent());
-			GrabbedObjectMesh->AddForce(ForceVector* mMagneticForce);
+			//GrabbedObjectMesh->AddForce(ForceVector* mMagneticForce);
 
 			FVector Origin;
 			FVector BoxExtent;
